@@ -1,0 +1,38 @@
+<html>
+    test
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    
+    <script>
+        var canvas;
+        var canvasContext;
+        var ballX = 50;
+        var ballY = 50;
+
+        window.onload = function () {
+            canvas = document.getElementById('gameCanvas');
+            canvasContext = canvas.getContext('2d');
+
+            var framesPerSecond = 30;
+            setInterval(function(){ // anonymous function
+                moveEverything();
+                drawEverything();
+            }, 1000/framesPerSecond); // Call the function each x ms    
+        }
+
+        function moveEverything(){
+            ballX = ballX + 25;
+            ballY += 10;
+        }
+
+        function drawEverything(){
+            canvasContext.fillStyle = 'black'; // Set the graphics color for the next shape, ie a rectangle
+            canvasContext.fillRect(0, 0, canvas.width, canvas.height); // Place the rectangle inside the canvas
+            // The order of the creation overlaps
+            canvasContext.fillStyle = 'white';
+            canvasContext.fillRect(5, 210, 10, 100);
+            canvasContext.fillStyle = 'white';
+            canvasContext.fillRect(ballX, 50, 30, 30);
+            
+        }
+    </script>
+</html>
