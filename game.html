@@ -9,6 +9,8 @@
         // Score variables
         var scorePlayer1 = 0;
         var scorePlayer2 = 0;
+        var scoreToWin = 5; // The maximal score
+        var start = true;
 
         // Ball dimension
         var ballSize = 15;
@@ -62,6 +64,12 @@
 
         // Reset function
         function ballReset(){
+            if(scorePlayer1 >= scoreToWin || scorePlayer2 >= scoreToWin){
+                // Stop the game
+                scorePlayer1 = scorePlayer2 = 0;
+                start = false;
+            }
+            
             // Center the ball
             ballX = canvas.width/2;
             ballY = canvas.height/2;
@@ -82,6 +90,9 @@
 
         // Create the "dynamics" of the ball
         function moveEverything(){
+            
+            if(!start) return; // Do not execute the belowed code
+
             computerMovement();
 
             ballX += ballSpeedX;
@@ -91,6 +102,10 @@
             if(ballX - ballSize < 0){            
                 if( ballY > paddle1Y && ballY < paddle1Y+paddle1Height){ // out of the paddle region
                     ballSpeedX *=-1; // Revert the direction
+                    
+                    // Ball control = depending where the ball hit the paddle, it reflects it in a different angle
+                    var deltaY = ballY - (paddle1Y+paddle1Height/2);
+                    ballSpeedY = deltaY * 0.35;
                 }
                 else {
                     scorePlayer2++;
@@ -102,6 +117,10 @@
             if(ballX + ballSize > canvas.width ){
                 if( ballY > paddle2Y && ballY < paddle2Y+paddle2Height){ // out of the paddle region
                     ballSpeedX *=-1; // Revert the direction
+                
+                    // Ball control = depending where the ball hit the paddle, it reflects it in a different angle
+                    var deltaY = ballY - (paddle2Y+paddle2Height/2);
+                    ballSpeedY = deltaY * 0.35;
                 }
                 else {
                     scorePlayer1++;
@@ -114,10 +133,21 @@
                 ballSpeedY *=-1; // Revert the direction
             }
         }
+        
 
         // Function called to draw everything on the page
         function drawEverything(){
             colorRect(0, 0, canvas.width, canvas.height, 'black'); // Fill the canvas color
+            
+            // Draw the score
+            canvasContext.fillStyle = 'white';
+            canvasContext.fillText(scorePlayer1, 100, 100);
+            canvasContext.fillText(scorePlayer2, canvas.width-100, 100);
+
+            if(!start){
+                canvasContext.fillText("Click to continue", 400, 300);
+                return;
+            }
             
             // Left paddle
             colorRect(PADDLE1X, paddle1Y, PADDLE_THICKNESS, paddle1Height, 'white');   
@@ -127,10 +157,6 @@
 
             // Draw the ball
             colorBall(ballX, ballY, ballSize, 'white');
-
-            // Draw the score
-            canvasContext.fillText(scorePlayer1, 100, 100);
-            canvasContext.fillText(scorePlayer2, canvas.width-100, 100);
         }
 
         // Function to create the shapes
