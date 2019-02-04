@@ -1,38 +1,55 @@
 <html>
-    test
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <!-- Create the canvas that will display the game -->
+    <canvas id="gameCanvas" width="800" height="600"></canvas> 
     
     <script>
         var canvas;
         var canvasContext;
+
+        // Ball dimension
+        var ballSize = 30;
+        
+        // Ball position variables
         var ballX = 50;
         var ballY = 50;
+
+        // Ball velocity variables
+        var ballSpeedX = 5;
+        var ballSpeedY = 5;
 
         window.onload = function () {
             canvas = document.getElementById('gameCanvas');
             canvasContext = canvas.getContext('2d');
 
-            var framesPerSecond = 30;
-            setInterval(function(){ // anonymous function
+            var framesPerSecond = 30;    //30fps
+            setInterval(function(){      // anonymous function
                 moveEverything();
                 drawEverything();
-            }, 1000/framesPerSecond); // Call the function each x ms    
+            }, 1000/framesPerSecond);     // Call the function each x ms    
         }
 
+        // Create the "dynamics" of the ball
         function moveEverything(){
-            ballX = ballX + 25;
-            ballY += 10;
+            ballX = ballX + ballSpeedX;
+            ballY += ballSpeedY;
+
+            if(ballX + ballSize > canvas.width || ballX < 0){
+                ballSpeedX *=-1; // Revert the direction
+            }
         }
 
+        // Function called to draw everything on the page
         function drawEverything(){
-            canvasContext.fillStyle = 'black'; // Set the graphics color for the next shape, ie a rectangle
-            canvasContext.fillRect(0, 0, canvas.width, canvas.height); // Place the rectangle inside the canvas
-            // The order of the creation overlaps
-            canvasContext.fillStyle = 'white';
-            canvasContext.fillRect(5, 210, 10, 100);
-            canvasContext.fillStyle = 'white';
-            canvasContext.fillRect(ballX, 50, 30, 30);
-            
+            colorRect(0, 0, canvas.width, canvas.height, 'black'); // Fill the canvas color
+            colorRect(5, 210, 10, 100, 'white'); // 
+            colorRect(ballX, 50, ballSize, ballSize, 'red'); // Ball
+        }
+
+        // Function to create the shapes
+        function colorRect(leftX, topY, width, height, drawcolor){
+            canvasContext.fillStyle = drawcolor; // Set the graphics color for the next shape, ie a rectangle
+            canvasContext.fillRect(leftX, topY, width, height); // Place the rectangle inside the canvas
+
         }
     </script>
 </html>
