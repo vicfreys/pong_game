@@ -14,9 +14,25 @@
         var ballY = 50;
 
         // Ball velocity variables
-        var ballSpeedX = 5;
-        var ballSpeedY = 5;
+        var ballSpeedX = 10;
+        var ballSpeedY = 4;
 
+        var paddle1Y = 250;     // The paddle can only move on the Y-axis
+        var paddleHeight = 100; // Paddle height, not const so it can change later on
+
+        function calculateMousePos(e){
+            var rect = canvas.getBoundingClientRect(); // Get the rectangle object of the Canvas
+            var root = document.documentElement;    // Get the Element of the document, here the <html>
+            
+            var mouseX = e.clientX - rect.left - root.scrollLeft; 
+            var mouseY = e.clientY - rect.top - root.scrollTop;
+            
+            return { // Return then an object literal with the mouse position as followed (x,y)
+                x: mouseX,
+                y: mouseY
+            };
+        }
+        
         window.onload = function () {
             canvas = document.getElementById('gameCanvas');
             canvasContext = canvas.getContext('2d');
@@ -25,16 +41,25 @@
             setInterval(function(){      // anonymous function
                 moveEverything();
                 drawEverything();
-            }, 1000/framesPerSecond);     // Call the function each x ms    
+            }, 1000/framesPerSecond);     // Call the function each x ms  
+
+            canvas.addEventListener('mousemove', function(e){
+                var mousePos = calculateMousePos(e);
+                paddle1Y = mousePos.y - paddleHeight/2; // So the mouse is centered on the paddle
+            }); 
         }
 
         // Create the "dynamics" of the ball
         function moveEverything(){
-            ballX = ballX + ballSpeedX;
+            ballX += ballSpeedX;
             ballY += ballSpeedY;
 
-            if(ballX + ballSize > canvas.width || ballX < 0){
+            if(ballX + ballSize > canvas.width || ballX - ballSize < 0){
                 ballSpeedX *=-1; // Revert the direction
+            }
+
+            if(ballY + ballSize > canvas.height || ballY -ballSize < 0){
+                ballSpeedY *=-1; // Revert the direction
             }
         }
 
@@ -42,18 +67,16 @@
         function drawEverything(){
             colorRect(0, 0, canvas.width, canvas.height, 'black'); // Fill the canvas color
             
-            colorRect(5, 210, 10, 100, 'white'); 
+            colorRect(5, paddle1Y, 10, 100, 'white');    // Create the paddle1
 
             // Draw the ball
-            colorBall(ballX, 100, ballSize, 'white');
-
+            colorBall(ballX, ballY, ballSize, 'white');
         }
 
         // Function to create the shapes
         function colorRect(leftX, topY, width, height, drawcolor){
             canvasContext.fillStyle = drawcolor; // Set the graphics color for the next shape, ie a rectangle
             canvasContext.fillRect(leftX, topY, width, height); // Place the rectangle inside the canvas
-
         }
 
         // Function that draws a colored ball
