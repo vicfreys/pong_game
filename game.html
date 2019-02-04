@@ -21,7 +21,7 @@
             canvas = document.getElementById('gameCanvas');
             canvasContext = canvas.getContext('2d');
 
-            var framesPerSecond = 30;    //30fps
+            var framesPerSecond = 30;    // 30fps
             setInterval(function(){      // anonymous function
                 moveEverything();
                 drawEverything();
@@ -41,8 +41,12 @@
         // Function called to draw everything on the page
         function drawEverything(){
             colorRect(0, 0, canvas.width, canvas.height, 'black'); // Fill the canvas color
-            colorRect(5, 210, 10, 100, 'white'); // 
-            colorRect(ballX, 50, ballSize, ballSize, 'red'); // Ball
+            
+            colorRect(5, 210, 10, 100, 'white'); 
+
+            // Draw the ball
+            colorBall(ballX, 100, ballSize, 'white');
+
         }
 
         // Function to create the shapes
@@ -50,6 +54,14 @@
             canvasContext.fillStyle = drawcolor; // Set the graphics color for the next shape, ie a rectangle
             canvasContext.fillRect(leftX, topY, width, height); // Place the rectangle inside the canvas
 
+        }
+
+        // Function that draws a colored ball
+        function colorBall(centerX, centerY, radius, color){
+            canvasContext.fillStyle = color;
+            canvasContext.beginPath();
+            canvasContext.arc(centerX, centerY, radius, 0, Math.PI*2, true);
+            canvasContext.fill();
         }
     </script>
 </html>
