@@ -46,6 +46,13 @@
                 y: mouseY
             };
         }
+
+        function handleMouseClick(e){
+            if(!start){
+                scorePlayer1 = scorePlayer2 = 0;
+                start = true;
+            }
+        }
         
         window.onload = function () {
             canvasContext = canvas.getContext('2d');
@@ -56,6 +63,8 @@
                 drawEverything();
             }, 1000/framesPerSecond);     // Call the function each x ms  
 
+            canvas.addEventListener('mousedown', handleMouseClick); // the function but not its instanciation (english ?)
+            
             canvas.addEventListener('mousemove', function(e){
                 var mousePos = calculateMousePos(e);
                 paddle1Y = mousePos.y - paddle1Height/2; // So the mouse is centered on the paddle
@@ -66,7 +75,7 @@
         function ballReset(){
             if(scorePlayer1 >= scoreToWin || scorePlayer2 >= scoreToWin){
                 // Stop the game
-                scorePlayer1 = scorePlayer2 = 0;
+                
                 start = false;
             }
             
@@ -134,6 +143,11 @@
             }
         }
         
+        function drawNet(){
+            for(let i = 0; i < canvas.height; i+=40){
+                colorRect(canvas.width/2-1, i, 2, 20, 'white');
+            }
+        }
 
         // Function called to draw everything on the page
         function drawEverything(){
@@ -145,10 +159,18 @@
             canvasContext.fillText(scorePlayer2, canvas.width-100, 100);
 
             if(!start){
-                canvasContext.fillText("Click to continue", 400, 300);
+                if(scorePlayer1 >= scoreToWin){
+                    canvasContext.fillText("LEFT PLAYER WON", 100, 100);
+                }
+                if(scorePlayer2 >= scoreToWin){
+                    canvasContext.fillText("RIGHT PLAYER WON", 100, 100);
+                }
+                canvasContext.fillText("Click to continue", 350, 500);
                 return;
             }
             
+            drawNet();
+
             // Left paddle
             colorRect(PADDLE1X, paddle1Y, PADDLE_THICKNESS, paddle1Height, 'white');   
 
