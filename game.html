@@ -6,6 +6,10 @@
         var canvas = document.getElementById('gameCanvas');;
         var canvasContext;
 
+        // Score variables
+        var scorePlayer1 = 0;
+        var scorePlayer2 = 0;
+
         // Ball dimension
         var ballSize = 15;
         
@@ -15,7 +19,7 @@
 
         // Ball velocity variables
         var ballSpeedX = 10;
-        var ballSpeedY = 4;
+        var ballSpeedY = 10;
 
         const PADDLE_THICKNESS = 10; // Set the thickness const
         // Left Paddle
@@ -63,11 +67,23 @@
             ballY = canvas.height/2;
 
             ballSpeedX *=-1; // Move
+        }
 
+        // Basic AI
+        function computerMovement(){
+            var paddle2YCenter = paddle2Y+(paddle2Height/2); // The lock will be on the center, should be more precise
+            if(paddle2YCenter < ballY-15){
+                paddle2Y += 6;
+            }
+            else if(paddle2YCenter > ballY+15) {
+                paddle2Y -= 6;
+            }
         }
 
         // Create the "dynamics" of the ball
         function moveEverything(){
+            computerMovement();
+
             ballX += ballSpeedX;
             ballY += ballSpeedY;
 
@@ -77,6 +93,7 @@
                     ballSpeedX *=-1; // Revert the direction
                 }
                 else {
+                    scorePlayer2++;
                     ballReset();
                 }
             }
@@ -87,7 +104,8 @@
                     ballSpeedX *=-1; // Revert the direction
                 }
                 else {
-                    ballReset();
+                    scorePlayer1++;
+                    ballReset();     
                 } 
             }
 
@@ -109,6 +127,10 @@
 
             // Draw the ball
             colorBall(ballX, ballY, ballSize, 'white');
+
+            // Draw the score
+            canvasContext.fillText(scorePlayer1, 100, 100);
+            canvasContext.fillText(scorePlayer2, canvas.width-100, 100);
         }
 
         // Function to create the shapes
