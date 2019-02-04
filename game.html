@@ -3,11 +3,11 @@
     <canvas id="gameCanvas" width="800" height="600"></canvas> 
     
     <script>
-        var canvas;
+        var canvas = document.getElementById('gameCanvas');;
         var canvasContext;
 
         // Ball dimension
-        var ballSize = 30;
+        var ballSize = 15;
         
         // Ball position variables
         var ballX = 50;
@@ -17,8 +17,16 @@
         var ballSpeedX = 10;
         var ballSpeedY = 4;
 
+        const PADDLE_THICKNESS = 10; // Set the thickness const
+        // Left Paddle
         var paddle1Y = 250;     // The paddle can only move on the Y-axis
-        var paddleHeight = 100; // Paddle height, not const so it can change later on
+        const PADDLE1X = 2;     // Const cuz it should not move on the X-axis
+        var paddle1Height = 100; // Paddle height, not const so it can change later on
+
+        // Right Paddle
+        var paddle2Y = 250;     // The paddle can only move on the Y-axis
+        const PADDLE2X = canvas.width - PADDLE1X - PADDLE_THICKNESS; // So both left and right paddles have the same shift from the edge (-10 comes from the paddle width)
+        var paddle2Height = 100; // Paddle height, not const so it can change later on
 
         function calculateMousePos(e){
             var rect = canvas.getBoundingClientRect(); // Get the rectangle object of the Canvas
@@ -34,7 +42,6 @@
         }
         
         window.onload = function () {
-            canvas = document.getElementById('gameCanvas');
             canvasContext = canvas.getContext('2d');
 
             var framesPerSecond = 30;    // 30fps
@@ -45,8 +52,18 @@
 
             canvas.addEventListener('mousemove', function(e){
                 var mousePos = calculateMousePos(e);
-                paddle1Y = mousePos.y - paddleHeight/2; // So the mouse is centered on the paddle
+                paddle1Y = mousePos.y - paddle1Height/2; // So the mouse is centered on the paddle
             }); 
+        }
+
+        // Reset function
+        function ballReset(){
+            // Center the ball
+            ballX = canvas.width/2;
+            ballY = canvas.height/2;
+
+            ballSpeedX *=-1; // Move
+
         }
 
         // Create the "dynamics" of the ball
@@ -54,10 +71,27 @@
             ballX += ballSpeedX;
             ballY += ballSpeedY;
 
-            if(ballX + ballSize > canvas.width || ballX - ballSize < 0){
-                ballSpeedX *=-1; // Revert the direction
+            // Left side
+            if(ballX - ballSize < 0){            
+                if( ballY > paddle1Y && ballY < paddle1Y+paddle1Height){ // out of the paddle region
+                    ballSpeedX *=-1; // Revert the direction
+                }
+                else {
+                    ballReset();
+                }
             }
 
+            // Right side collision
+            if(ballX + ballSize > canvas.width ){
+                if( ballY > paddle2Y && ballY < paddle2Y+paddle2Height){ // out of the paddle region
+                    ballSpeedX *=-1; // Revert the direction
+                }
+                else {
+                    ballReset();
+                } 
+            }
+
+            // Top and bottom collision
             if(ballY + ballSize > canvas.height || ballY -ballSize < 0){
                 ballSpeedY *=-1; // Revert the direction
             }
@@ -67,7 +101,11 @@
         function drawEverything(){
             colorRect(0, 0, canvas.width, canvas.height, 'black'); // Fill the canvas color
             
-            colorRect(5, paddle1Y, 10, 100, 'white');    // Create the paddle1
+            // Left paddle
+            colorRect(PADDLE1X, paddle1Y, PADDLE_THICKNESS, paddle1Height, 'white');   
+
+            // Right paddle
+            colorRect(PADDLE2X, paddle2Y, PADDLE_THICKNESS, paddle2Height, 'white');    
 
             // Draw the ball
             colorBall(ballX, ballY, ballSize, 'white');
@@ -83,8 +121,8 @@
         function colorBall(centerX, centerY, radius, color){
             canvasContext.fillStyle = color;
             canvasContext.beginPath();
-            canvasContext.arc(centerX, centerY, radius, 0, Math.PI*2, true);
-            canvasContext.fill();
+            canvasContext.arc(centerX, centerY, radius, 0, Math.PI*2, true); // Draw a full circle
+            canvasContext.fill(); // fill it of the color
         }
     </script>
 </html>
